@@ -1,4 +1,16 @@
 defmodule GitHub.GraphQL do
+  @doc """
+  Query the GitHub GraphQL API
+
+  Nothing fancy here like `GitHub.GraphQL.paginate`: the query is simply
+  submitted and the response lightly parsed.
+
+  The happy path is a response with a 200 status code and a body that contains
+  a "data" field. If this is the case then `{:ok, data}` is returned.
+
+  Otherwise various well known error conditions are recognized and will be
+  returned as `{:error, some_error_value}`
+  """
   def query(query, config, vars \\ %{first: 20}) do
     query
     |> call_graphql(config, vars)
@@ -17,6 +29,35 @@ defmodule GitHub.GraphQL do
     end
   end
 
+  @doc """
+  Make a paginated query against the GitHub GraphQL API
+
+  This requires that the query itself support pagination.
+
+  1. The query must define `$first: Int` and `$after: String` variables
+  2. The query must use the `$first` and `$after` variables
+  3. The query must request `pageInfo { hasNextPage, endCursor }`
+
+  ## Example query that supports automatic pagination
+
+  ```graphql
+  query($first: Int, $after: String) {
+    viewer {
+      followers(first: $first, after: $after) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        nodes {
+          databaseId
+        }
+      }
+    }
+  }
+  ```
+
+  The `nodes` data will be collected into a list and returned.
+  """
   def paginate(query, config, vars \\ %{first: 20}) do
     init = fn -> request(query, config, vars) end
     next = &next/1

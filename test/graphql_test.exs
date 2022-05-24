@@ -35,6 +35,11 @@ defmodule GraphQLTest do
 
       assert(GraphQL.find_pageinfo(map) |> is_nil)
     end
+
+    test "returns nil for empty map" do
+      map = %{}
+      assert(GraphQL.find_pageinfo(map) |> is_nil)
+    end
   end
 
   describe "find_nodes" do

@@ -2,18 +2,20 @@ defmodule GithubGraphQLSmartcell.MixProject do
   use Mix.Project
 
   @github "https://github.com/sdball/github_graphql_smartcell"
+  @version "0.1.0"
 
   def project do
     [
       name: "GitHub GraphQL Smart Cell",
       description: description(),
       app: :github_graphql_smartcell,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
-      source_url: @github,
+      docs: docs(),
+      source_url: @github
     ]
   end
 
@@ -31,7 +33,17 @@ defmodule GithubGraphQLSmartcell.MixProject do
     [
       {:kino, "~> 0.6.1"},
       {:neuron, "~> 5.0"},
-      {:jason, "~> 1.3"}
+      {:jason, "~> 1.3"},
+      {:ex_doc, "~> 0.14", only: :dev, runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "components",
+      source_url: @github,
+      source_ref: "v#{@version}",
+      extras: ["guides/components.livemd", "guides/pagination.livemd"]
     ]
   end
 
@@ -39,7 +51,7 @@ defmodule GithubGraphQLSmartcell.MixProject do
     [
       licenses: ["MIT"],
       links: %{
-        "GitHub" => @github,
+        "GitHub" => @github
       }
     ]
   end

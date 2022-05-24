@@ -1,0 +1,116 @@
+# Pagination
+
+```elixir
+Mix.install([
+  {:github_graphql_smartcell, "~> 0.1.0"}
+])
+```
+
+## GraphQL Pagination
+
+While GraphQL has a pretty good pagination story it is still GraphQL which
+means **the query itself** needs to know about the pagination data and
+variables.
+
+Here's a query that will get the database IDs for your first 10 followers
+
+```graphql
+{
+  viewer {
+    followers(first: 10) {
+      nodes {
+        databaseId
+      }
+    }
+  }
+}
+```
+
+Great right? But how do you paginate?
+
+Well, you need to ask for `pageInfo` with `endCursor` and `hasNextPage`
+
+```graphql
+{
+  viewer {
+    followers(first: 10) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        databaseId
+      }
+    }
+  }
+}
+```
+
+But that's not enough of course. If you execute this query in your GitHub
+GraphQL smart cell you should see a message
+
+```
+endCursor is not advancing: halting queries
+```
+
+That's because the GraphQL query depends on variables for pagination. And
+variables must be declared and known to both the querying code AND the query
+itself.
+
+```graphql
+{
+  viewer {
+    followers(first: $first, after: $after) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        databaseId
+      }
+    }
+  }
+}
+```
+
+Because the smart cell is the querying code we unfortunately have to simply
+agree to use well-known names for `$first` and `$after`. We could make the
+smart cell have extra inputs to declare the variables and then declare the
+names of the variables but that seems even more confusing.
+
+Also that's STILL not enough to make GraphQL happy. You need to declare the
+names and types of the variables too!
+
+That means you need to explicitly add the normally optional `query {}` wrapper
+and declare the variables and their types.
+
+```graphql
+query($first: Int, $after: String) {
+  viewer {
+    followers(first: $first, after: $after) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        databaseId
+      }
+    }
+  }
+}
+```
+
+Then, at last, if you execute that query in the GitHub GraphQL smart cell you
+should see a list of all of your followers' databaseIds.
+
+Please clap because pulling out the `pageInfo` and `nodes` in a mostly generic
+way was a pain.
+
+But also watch out because I probably did not account for some shapes of query
+results and things will blow up.
+
+But for at least the simple queries I've executed so far this smart cell
+
+* Understands how to simply return results if the query does not declare pagination
+* Understands how to recognize if there's pagination info but not usage in the query and return the results without endlessly querying the same cursor.
+* Understands how to paginate nodes with pageInfo data into a combined list
