@@ -11,7 +11,7 @@ of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:github_graphql_smartcell, "~> 0.0.1"}
+    {:github_graphql_smartcell, "~> 0.1.0"}
   ]
 end
 ```
@@ -20,7 +20,7 @@ In an Elixir LiveBook
 
 ```elixir
 Mix.install([
-  {:github_graphql_smartcell, "~> 0.0.1"},
+  {:github_graphql_smartcell, "~> 0.1.0"},
 ])
 ```
 
