@@ -26,7 +26,7 @@ defmodule GithubGraphQLSmartcell.MixProject do
   end
 
   defp description do
-    "GitHub GraphQL integration with LiveBook"
+    "GitHub GraphQL integration with Livebook"
   end
 
   defp deps do
