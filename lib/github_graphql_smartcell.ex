@@ -1,4 +1,4 @@
-defmodule GithubGraphqlSmartcell do
+defmodule GithubGraphQLSmartcell do
   @moduledoc false
 
   use Kino.JS, assets_path: "lib/assets/github_graphql_smartcell"
@@ -10,8 +10,9 @@ defmodule GithubGraphqlSmartcell do
     fields = %{
       "variable" => Kino.SmartCell.prefixed_var_name("results", attrs["variable"]),
       "endpoint" => attrs["endpoint"] || "https://api.github.com/graphql",
-      "api_token" => attrs["api_token"] || "PASTE API TOKEN",
+      "api_token" => attrs["api_token"] || "",
       "query" => attrs["query"] || "{ viewer { login } }",
+      "paginate" => attrs["paginate"],
     }
 
     {:ok, assign(ctx, fields: fields)}
@@ -28,10 +29,17 @@ defmodule GithubGraphqlSmartcell do
 
   @impl true
   def to_attrs(%{assigns: %{fields: fields}}) do
-    Map.take(fields, ["variable", "endpoint", "api_token", "query"])
+    Map.take(fields, ["variable", "endpoint", "api_token", "query", "paginate"])
   end
 
   @impl true
+  def to_source(attrs = %{"paginate" => true}) do
+    quote do
+      unquote(quoted_var(attrs["variable"])) = GitHub.GraphQL.paginate(unquote(attrs["query"]), endpoint: unquote(attrs["endpoint"]), token: unquote(attrs["api_token"]))
+    end
+    |> Kino.SmartCell.quoted_to_string()
+  end
+
   def to_source(attrs) do
     quote do
       {:ok, unquote(quoted_var(attrs["variable"]))} = GitHub.GraphQL.query(unquote(attrs["query"]), endpoint: unquote(attrs["endpoint"]), token: unquote(attrs["api_token"]))
@@ -41,6 +49,13 @@ defmodule GithubGraphqlSmartcell do
 
   @impl true
   def handle_event("update_field", %{"field" => field, "value" => value}, ctx) do
+    updated_fields = to_updates(ctx.assigns.fields, field, value)
+    ctx = update(ctx, :fields, &Map.merge(&1, updated_fields))
+    broadcast_event(ctx, "update", %{"fields" => updated_fields})
+    {:noreply, ctx}
+  end
+
+  def handle_event("update_field", %{"field" => field, "checked" => value}, ctx) do
     updated_fields = to_updates(ctx.assigns.fields, field, value)
     ctx = update(ctx, :fields, &Map.merge(&1, updated_fields))
     broadcast_event(ctx, "update", %{"fields" => updated_fields})

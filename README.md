@@ -1,4 +1,4 @@
-# GithubGraphqlSmartcell
+# GithubGraphQLSmartcell
 
 This is an [Elixir LiveBook](https://livebook.dev) smart cell that allows
 querying the GitHub GraphQL API.

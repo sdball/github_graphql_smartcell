@@ -1,4 +1,4 @@
-defmodule GithubGraphqlSmartcell.MixProject do
+defmodule GithubGraphQLSmartcell.MixProject do
   use Mix.Project
 
   def project do
@@ -13,7 +13,7 @@ defmodule GithubGraphqlSmartcell.MixProject do
 
   def application do
     [
-      mod: {GithubGraphqlSmartcell.Application, []}
+      mod: {GithubGraphQLSmartcell.Application, []}
     ]
   end
 
