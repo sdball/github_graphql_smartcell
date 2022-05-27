@@ -1,6 +1,6 @@
 # GithubGraphQLSmartcell
 
-This is an [Elixir LiveBook](https://livebook.dev) smart cell that allows
+This is an [Elixir Livebook](https://livebook.dev) smart cell that allows
 querying the GitHub GraphQL API.
 
 ## Installation
@@ -16,7 +16,7 @@ def deps do
 end
 ```
 
-In an Elixir LiveBook
+In an Elixir Livebook
 
 ```elixir
 Mix.install([
@@ -28,11 +28,11 @@ Mix.install([
 
 You will need
 
-1. Elixir LiveBook
+1. Elixir Livebook
 2. A GitHub personal access token
 3. A GraphQL query you want to execute
 
-In your Elixir LiveBook's setup cell either search for
+In your Elixir Livebook's setup cell either search for
 `github_graphql_smartcell` or add the above `Mix.install` code.
 
 Then click "+ Smart" and then select "GitHub GraphQL Query" to insert the smart cell.
